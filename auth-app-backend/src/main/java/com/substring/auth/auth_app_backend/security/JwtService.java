@@ -3,7 +3,10 @@ package com.substring.auth.auth_app_backend.security;
 import com.substring.auth.auth_app_backend.entities.Role;
 import com.substring.auth.auth_app_backend.entities.User;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +19,8 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
+@Getter
+@Setter
 public class JwtService {
 
     private final SecretKey key;
@@ -28,7 +33,7 @@ public class JwtService {
                       @Value("${security.jwt.refresh-ttl-seconds}") long refreshTtlSeconds,
                       @Value("${security.jwt.issuer}") String issuer) {
 
-        if(secret==null || secret.length()<64){
+        if (secret == null || secret.length() < 64) {
             throw new IllegalArgumentException("Invalid secret");
         }
 
@@ -39,7 +44,7 @@ public class JwtService {
     }
 
     //generate token:
-    public String generateAccessToken(User user){
+    public String generateAccessToken(User user) {
         Instant now = Instant.now();
         List<String> roles = user.getRoles() == null ? List.of() :
                 user.getRoles().stream().map(Role::getName).toList();
@@ -50,16 +55,16 @@ public class JwtService {
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plusSeconds(accessTtlSeconds)))
                 .claims(Map.of(
-                        "email",user.getEmail(),
+                        "email", user.getEmail(),
                         "roles", roles,
                         "typ", "access"
                 ))
-                .signWith(key,  Jwts.SIG.HS512) // old method deprecated- SignatureAlgorithm.HS512
+                .signWith(key, SignatureAlgorithm.HS512) // Jwts.SIG.HS512 old method deprecated- SignatureAlgorithm.HS512
                 .compact();
     }
 
-//generate refresh token
-    public String generateRefreshToken(User user, String jti){
+    //generate refresh token
+    public String generateRefreshToken(User user, String jti) {
         Instant now = Instant.now();
         return Jwts.builder()
                 .id(jti)
@@ -68,36 +73,42 @@ public class JwtService {
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plusSeconds(refreshTtlSeconds)))
                 .claim("typ", "refresh")
-                .signWith(key,  Jwts.SIG.HS512)  //old method @Deprecated SignatureAlgorithm.HS512
+                .signWith(key, SignatureAlgorithm.HS512)  //Jwts.SIG.HS512old method @Deprecated SignatureAlgorithm.HS512
                 .compact();
     }
 
     //parse the token
-    public Jws<Claims> parse(String token){
-        try{
-            return Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
-        }catch (JwtException e){
-            throw e;
-        }
+    public Jws<Claims> parse(String token) {
+        return Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
     }
 
-    public boolean isAccessToken(String token){
+    public boolean isAccessToken(String token) {
         Claims c = parse(token).getPayload();
         return "access".equals(c.get("typ"));
     }
 
-    public boolean isRefreshToken(String token){
+    public boolean isRefreshToken(String token) {
         Claims c = parse(token).getPayload();
         return "refresh".equals(c.get("typ"));
     }
 
-    public UUID getUserId(String token){
+    public UUID getUserId(String token) {
         Claims c = parse(token).getPayload();
-        return  UUID.fromString(c.getSubject());
+        return UUID.fromString(c.getSubject());
     }
 
-    public String getJti(String token){
+    public String getJti(String token) {
         return parse(token).getPayload().getId();
+    }
+
+    public List<String> getRoles(String token) {
+        Claims c = parse(token).getPayload();
+        return (List<String>) c.get("roles");
+    }
+
+    public String getEmail(String token) {
+        Claims c = parse(token).getPayload();
+        return (String) c.get("email");
     }
 
 
