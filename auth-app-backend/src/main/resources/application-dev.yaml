@@ -29,6 +29,19 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
         format_sql: true
     show-sql: true
+  security:
+#    oauth2 configurations
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:test-client-id}
+            client-secret: ${GOOGLE_CLIENT_SECRET:test-client-secret}
+            scope:
+              - email
+              - profile
+              - openid
+
 
 #    jpa and hibernate configurations
 logging:
@@ -46,3 +59,4 @@ security:
      cookie-http-only: ${JWT_COOKIE_SECURE_ONLY:true}
      cookie-same-site: ${JWT_COOKIE_SAME_SITE:lax}
      cookie-domain: ${JWT_COOKIE_DOMAIN:localhost}
+
