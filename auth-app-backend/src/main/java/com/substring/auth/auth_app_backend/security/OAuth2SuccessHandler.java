@@ -8,9 +8,10 @@ import com.substring.auth.auth_app_backend.repositories.UserRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -22,7 +23,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -31,49 +32,69 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final CookieService cookieService;
     private final RefreshTokenRepository refreshTokenRepository;
 
+    @Value("${app.auth.frontend.success-redirect}")
+    private String frontendFailureUrl;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
         logger.info("Authentication Success");
         logger.info(authentication.toString());
 
-        OAuth2User oAuth2User =(OAuth2User)authentication.getPrincipal();
+        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
 
         //identify user
         String registrationId = "unknown";
-        if (authentication instanceof OAuth2AuthenticationToken token){
+        if (authentication instanceof OAuth2AuthenticationToken token) {
             registrationId = token.getAuthorizedClientRegistrationId();
         }
 
-        logger.info("registrationId:"+registrationId);
-        logger.info("user:"+oAuth2User.getAttributes().toString());
+        logger.info("registrationId:" + registrationId);
+        logger.info("user:" + oAuth2User.getAttributes().toString());
 
         User user;
-
         switch (registrationId) {
-            case "google"->{
+            case "google" -> {
 
-            String googleId = oAuth2User.getAttributes().getOrDefault("sub", "").toString();
-            String email = oAuth2User.getAttributes().getOrDefault("email", "").toString();
-            String name = oAuth2User.getAttributes().getOrDefault("name", "").toString();
-            String picture = oAuth2User.getAttributes().getOrDefault("picture", "").toString();
+                String googleId = oAuth2User.getAttributes().getOrDefault("sub", "").toString();
+                String email = oAuth2User.getAttributes().getOrDefault("email", "").toString();
+                String name = oAuth2User.getAttributes().getOrDefault("name", "").toString();
+                String picture = oAuth2User.getAttributes().getOrDefault("picture", "").toString();
 
-            user = User.builder()
-                    .email(email)
-                    .name(name)
-                    .image(picture)
-                    .enable(true)
-                    .provider(Provider.GOOGLE)
-                    .build();
+                User newUser = User.builder()
+                        .email(email)
+                        .name(name)
+                        .image(picture)
+                        .enable(true)
+                        .provider(Provider.GOOGLE)
+                        .providerId(googleId)
+                        .build();
 
-            userRepository.findByEmail(email).ifPresentOrElse(user1 -> {
-                logger.info("User is there in database");
-                logger.info(user1.toString());
-            }, () -> {
-                //specify __ default role.
-                userRepository.save(user);
-            });
-        }
+                user = userRepository.findByEmail(email).orElseGet(() -> userRepository.save(newUser));
+            }
+
+            case "github" -> {
+                String name = oAuth2User.getAttributes().getOrDefault("login", "").toString();
+                String githubId = oAuth2User.getAttributes().getOrDefault("id", "").toString();
+                String image = oAuth2User.getAttributes().getOrDefault("avatar_url", "").toString();
+
+                String email = (String) oAuth2User.getAttributes().get("email");
+                if (email == null) {
+                    email = name + "@github.com";
+                }
+
+                User newUser = User.builder()
+                        .email(email)
+                        .name(name)
+                        .image(image)
+                        .enable(true)
+                        .provider(Provider.GITHUB)
+                        .providerId(githubId)
+                        .build();
+
+                user = userRepository.findByEmail(email).orElseGet(() -> userRepository.save(newUser));
+
+            }
             default -> {
                 throw new RuntimeException("Invalid registration id");
             }
@@ -83,6 +104,9 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         //user email
         //new user create
         //jwt token -- token le sath frontend pe fir redirect
+
+        //refresh:
+        //user --> refresh token unko revoke
 
         //refresh token banake dunga:
         String jti = UUID.randomUUID().toString();
@@ -99,8 +123,10 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user, refreshTokenOb.getJti());
 
-        cookieService.attachRefreshCookie(response,refreshToken,(int)jwtService.getRefreshTtlSeconds());
+        cookieService.attachRefreshCookie(response, refreshToken, (int) jwtService.getRefreshTtlSeconds());
 
-        response.getWriter().write("Login Successful");
+//        response.getWriter().write("Login Successful");
+
+        response.sendRedirect(frontendFailureUrl);
     }
 }

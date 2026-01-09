@@ -3,7 +3,6 @@ package com.substring.auth.auth_app_backend.security;
 import com.substring.auth.auth_app_backend.entities.Role;
 import com.substring.auth.auth_app_backend.entities.User;
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,10 +12,7 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Getter
@@ -62,6 +58,7 @@ public class JwtService {
                 .signWith(key, SignatureAlgorithm.HS512) // Jwts.SIG.HS512 old method deprecated- SignatureAlgorithm.HS512
                 .compact();
     }
+
 
     //generate refresh token
     public String generateRefreshToken(User user, String jti) {
