@@ -1,15 +1,14 @@
 import './App.css'
+import HomePage from './components/home/HomePage'
 import { Button } from './components/ui/button'
 import { Calendar } from './components/ui/calendar'
 
 function App() {
 
   return (
-   <div className="p-10">
-    <h1 className="text-3xl font-bold">Hello auth frontend app</h1>
-    <Button variant={"destructive"}>Click me</Button>
-    <Calendar />
-   </div>
+  <div>
+    <HomePage />
+  </div>
   )
 }
 
