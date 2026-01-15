@@ -71,6 +71,8 @@ security:
      cookie-domain: ${JWT_COOKIE_DOMAIN:localhost}
 
 app:
+  cors:
+    front-end-url: http://localhost:5173
   auth:
     frontend:
       success-redirect: http://localhost:5173/auth/success
