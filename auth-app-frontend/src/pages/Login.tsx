@@ -12,6 +12,7 @@ import { LoginUser } from "@/services/AuthService";
 import { useNavigate } from "react-router";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Spinner } from "@/components/ui/spinner";
+import useAuth from "@/auth/Store";
 
 function Login() {
   const [loginData, setLoginData] = useState<LoginData>({
@@ -22,7 +23,8 @@ function Login() {
   const [loading, setLoading] = useState<boolean>(false); // Placeholder for potential future use
   const [error, setError] = useState<any>(null); // Placeholder for potential future use
 
-  const navigate = useNavigate(); // Placeholder for potential future use
+  const navigate = useNavigate(); 
+  const login = useAuth((state) => state.login);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLoginData({
@@ -48,9 +50,13 @@ function Login() {
     // console.log(loginData);
     try {
       setLoading(true);
-      const userInfo = await LoginUser(loginData);
+      // const userInfo = await LoginUser(loginData);
+
+      //login function: useAuth
+       await login(loginData);
+
       toast.success("Login Successful !");
-      console.log(userInfo);
+      // console.log(userInfo);
       navigate("/dashboard");
       //save the current user logged in information to the local storage
       //localstorage 
