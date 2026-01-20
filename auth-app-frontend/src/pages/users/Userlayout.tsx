@@ -1,12 +1,17 @@
-import React from 'react'
+import useAuth from '@/auth/store';
+import { Navigate, Outlet } from 'react-router';
 
 function Userlayout() {
+
+  const checkLogin = useAuth((state) => state.checkLogin);
+
+  if(checkLogin())
   return(
-   <div className='p-10 flex flex-col items-center'>
-    <h1 className='text-2xl font-semibold'>Welcome to User Dashboard</h1>
-   <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maxime, itaque.</p>
-    </div>
-  )
+   <div>
+    <Outlet />
+   </div>
+  );
+  else return<Navigate to= {'/login'} />;
 }
 
 export default Userlayout

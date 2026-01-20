@@ -1,12 +1,13 @@
 import React from 'react'
 import { Button } from "./ui/button";
-import { NavLink } from 'react-router';
+import { NavLink, useNavigate } from 'react-router';
 import useAuth from '@/auth/Store';
 function Navbar() {
 
   const checkLogin = useAuth((state) => state.checkLogin);
   const user = useAuth((state) => state.user);
   const logout = useAuth((state) => state.logout);
+  const navigate = useNavigate();
 
   return (
     <nav className="py-5 md:py-0 dark:border-b border-gray-700 flex md:flex-row flex-col gap-4 md:gap-0 md:h-14 justify-around items-center ">
@@ -22,10 +23,11 @@ function Navbar() {
         {
           checkLogin() ? (
             <>
-              <NavLink to={"#!"}>{user?.name}</NavLink>
+              <NavLink to={"/dashboard/profile"}>{user?.name}</NavLink>
 
               <Button onClick={()=> {
                 logout();
+                navigate('/');
               }} size={"sm"} className="cursor-pointer"variant={'outline'}>
                 Logout
               </Button>
