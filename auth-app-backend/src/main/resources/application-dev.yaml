@@ -62,7 +62,7 @@ security:
    jwt:
      secret: ${JWT_SECRET:caa8c11fd6ea53a865b63d73f0a1d09d9c0dab7ebdecd6fef990924f7764233e}
      issuer: ${JWT_ISSUER:api.substring.com}
-     access-ttl-seconds: ${JWT_ACCESS_TTL_SECONDS:10}
+     access-ttl-seconds: ${JWT_ACCESS_TTL_SECONDS:600}
      refresh-ttl-seconds: ${JWT_REFRESH_TTL_SECONDS:86400}
      refresh-token-cookie-name: ${JWT_REFRESH_COOKIE_NAME:refreshToken}
      cookie-secure: ${JWT_COOKIE_SECURE:true}
