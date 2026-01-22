@@ -33,7 +33,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Value("${app.auth.frontend.success-redirect}")
-    private String frontendFailureUrl;
+        private String frontendSuccessUrl;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -127,6 +127,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
 //        response.getWriter().write("Login Successful");
 
-        response.sendRedirect(frontendFailureUrl);
+        response.sendRedirect(frontendSuccessUrl);
     }
 }

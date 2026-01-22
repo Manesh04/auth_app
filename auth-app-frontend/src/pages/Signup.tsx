@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import type RegisterData from "../models/RegisterData";
 import { registerUser } from "../services/AuthService";
 import { useNavigate } from "react-router";
+import OAuth2Buttons from "@/components/OAuth2Buttons";
 
 function Signup() {
   const [data, setData] = useState<RegisterData>({
@@ -153,7 +154,7 @@ const navigate = useNavigate();
               </span>
             </div>
 
-            {/* OAuth */}
+            {/* OAuth
             <div className="grid gap-3">
               <Button variant="outline" className="w-full gap-2">
                 <Mail className="h-4 w-4" />
@@ -164,6 +165,9 @@ const navigate = useNavigate();
                 Continue with GitHub
               </Button>
             </div>
+             */}
+
+             <OAuth2Buttons />
 
             {/* Footer */}
             <p className="text-center text-sm text-muted-foreground">

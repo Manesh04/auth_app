@@ -13,6 +13,7 @@ import { useNavigate } from "react-router";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Spinner } from "@/components/ui/spinner";
 import useAuth from "@/auth/Store";
+import OAuth2Buttons from "@/components/OAuth2Buttons";
 
 function Login() {
   const [loginData, setLoginData] = useState<LoginData>({
@@ -153,16 +154,7 @@ function Login() {
               </div>
 
               {/* OAuth Buttons */}
-              <div className="grid grid-cols-1 gap-3">
-                <Button variant="outline" className="w-full gap-2">
-                  <Mail className="h-4 w-4" />
-                  Continue with Google
-                </Button>
-                <Button variant="outline" className="w-full gap-2">
-                  <Github className="h-4 w-4" />
-                  Continue with GitHub
-                </Button>
-              </div>
+              <OAuth2Buttons />
 
               {/* Footer */}
               <p className="text-center text-sm text-muted-foreground">
