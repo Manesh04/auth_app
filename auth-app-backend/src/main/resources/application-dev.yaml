@@ -70,13 +70,19 @@ security:
      cookie-same-site: ${JWT_COOKIE_SAME_SITE:lax}
      cookie-domain: ${JWT_COOKIE_DOMAIN:localhost}
 
+#app:
+#  cors:
+#    front-end-url: http://localhost:5173
+#  auth:
+#    frontend:
+#      success-redirect: http://localhost:5173/oauth/success
+#      failure-redirect: http://localhost:5173/oauth/failure
+
 app:
   cors:
-    front-end-url: http://localhost:5173
+    front-end-url: ${FRONT_END_URL:http://localhost:5173}
   auth:
     frontend:
-      success-redirect: http://localhost:5173/oauth/success
-      failure-redirect: http://localhost:5173/oauth/failure
-
-
+      success-redirect: ${FRONT_END_SUCCESS_REDIRECT:http://localhost:5173/oauth/success}
+      failure-redirect: ${FRONT_END_FAILURE_REDIRECT:http://localhost:5173/oauth/failure}
 
