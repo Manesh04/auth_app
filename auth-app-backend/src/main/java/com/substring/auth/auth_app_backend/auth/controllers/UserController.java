@@ -48,6 +48,7 @@ public class UserController {
     @PreAuthorize("hasRole('" + AppConstant.ADMIN_ROLE + "')")
     @GetMapping("/{userId}")
     public ResponseEntity<UserDto> getUserById(@PathVariable("userId") String userId) {
+        System.out.println("User Id: "+userId);
         return ResponseEntity.ok(userService.getUserById(userId));
     }
 }
