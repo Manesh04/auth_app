@@ -50,6 +50,7 @@ public class UserController {
     public ResponseEntity<UserDto> getUserById(@PathVariable("userId") String userId) {
         System.out.println("User Id: "+userId);
         System.out.println("User Id: "+userId);
+        System.out.println("Jenkins webhook testing");
         return ResponseEntity.ok(userService.getUserById(userId));
     }
 }
