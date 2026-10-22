@@ -51,6 +51,7 @@ public class UserController {
         System.out.println("User Id: "+userId);
         System.out.println("User Id: "+userId);
         System.out.println("Jenkins webhook testing");
+        System.out.println("Jenkins pipeline webhook testing");
         return ResponseEntity.ok(userService.getUserById(userId));
     }
 }
