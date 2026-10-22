@@ -9,6 +9,10 @@ pipeline {
     options {
         timestamps()
     }
+	
+	environment {
+    SPRING_DATASOURCE_URL = 'jdbc:mysql://host.docker.internal:3306/auth_app_yt'
+	}
 
     stages {
         stage('Checkout') {
@@ -20,7 +24,7 @@ pipeline {
         stage('Build and Package') {
             steps {
                 dir('auth-app-backend') {
-                    sh 'mvn -B clean package -DskipTests'
+                    sh 'mvn -B clean verify'
                 }
             }
         }
